@@ -18,5 +18,6 @@ class OdtFile(object):
         shutil.copy(self._input_name, name)
         with NamedTemporaryFile() as tempFile:
             self.tree.write(tempFile, encoding="utf-8")
+            tempFile.flush()
             with ZipFile(name, "a") as zip:
                 zip.write(tempFile.name, "content.xml")
