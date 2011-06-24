@@ -1,0 +1,4 @@
+*.pyc
+output.odt
+.*.swp
+.~lock*
