@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import re
 import sys
 from optparse import OptionParser
 
@@ -12,12 +13,18 @@ DESCRIPTION = "Replace placeholders in a .odt file with the content of text file
 
 TEXT_URI = "urn:oasis:names:tc:opendocument:xmlns:text:1.0"
 
+PLACEHOLDER_START = "${"
+PLACEHOLDER_END = "}"
+PLACEHOLDER_RX = re.compile("^" + re.escape(PLACEHOLDER_START) + "(.*)" + re.escape(PLACEHOLDER_END) + "$")
+
 def replace_placeholders(tree, txt_dir):
     ns = {"text": TEXT_URI}
     for element in tree.xpath("//text:p", namespaces=ns):
-        txt = element.text
-        if txt is not None and txt.startswith("[") and txt.endswith("]"):
-            name = os.path.join(txt_dir, txt[1:-1])
+        if element.text is None:
+            continue
+        result = PLACEHOLDER_RX.match(element.text)
+        if result:
+            name = os.path.join(txt_dir, result.group(1))
             print "Replacing %s" % name
             if os.path.exists(name):
                 replace_placeholder(element, name)
