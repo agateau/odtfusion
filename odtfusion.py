@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+"""
+This file is part of the odtfusion project.
+
+@author: Aurélien Gâteau <aurelien.gateau@free.fr>
+@license: GPL v3 or later
+"""
 import os
 import re
 import sys
