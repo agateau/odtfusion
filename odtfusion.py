@@ -7,7 +7,8 @@ from lxml import etree
 
 from odtfile import OdtFile
 
-USAGE="%prog <odt-input-name> <odt-output-name> <txt-dir>..."
+USAGE = "%prog <odt-input-name> <odt-output-name> <txt-dir>"
+DESCRIPTION = "Replace placeholders in a .odt file with the content of text files"
 
 TEXT_URI = "urn:oasis:names:tc:opendocument:xmlns:text:1.0"
 
@@ -51,27 +52,10 @@ def replace_placeholder(element, name):
             element.text = content
 
 def main():
-    parser = OptionParser(usage=USAGE)
-
-    # Add an option which takes an argument and is stored in options.filename.
-    # 'metavar' is an example of argument and should match the text in 'help'.
-    parser.add_option("-f", "--file", dest="filename",
-                      help="write report to FILE", metavar="FILE")
-
-    # Add a boolean option stored in options.verbose.
-    parser.add_option("-x", "--xyz",
-                      action="store_true", dest="xyz", default=True,
-                      help="use 'xyz' method")
-
-    # Add an invert boolean option stored in options.verbose.
-    parser.add_option("-q", "--quiet",
-                      action="store_false", dest="verbose", default=True,
-                      help="don't print status messages to stdout")
-
+    parser = OptionParser(usage=USAGE, description=DESCRIPTION)
     (options, args) = parser.parse_args()
-
     if len(args) != 3:
-        parser.error("Missing args")
+        parser.error("Missing arguments")
 
     odt_input_name = args[0]
     odt_output_name = args[1]
