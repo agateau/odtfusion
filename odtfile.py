@@ -21,3 +21,4 @@ class OdtFile(object):
             tempFile.flush()
             with ZipFile(name, "a") as zip:
                 zip.write(tempFile.name, "content.xml")
+# vi: ts=4 sw=4 et
