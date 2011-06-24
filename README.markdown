@@ -25,6 +25,10 @@ To include fragments of text files:
 
     `${file.cpp#my-fragment}`
 
+There is also another tool: odtdump, which can be used to dump an indented
+version of the content.xml of a .odt document. This tool can be useful for
+debugging.
+
 # Future
 
 I may add a way to specify custom placeholders in the future, as well as
