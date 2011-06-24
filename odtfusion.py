@@ -7,6 +7,7 @@ from optparse import OptionParser
 from lxml import etree
 
 from odtfile import OdtFile
+from textfilecache import TextFileCache
 
 USAGE = "%prog <odt-input-name> <odt-output-name> <txt-dir>"
 DESCRIPTION = "Replace placeholders in a .odt file with the content of text files"
@@ -18,6 +19,7 @@ PLACEHOLDER_END = "}"
 PLACEHOLDER_RX = re.compile("^" + re.escape(PLACEHOLDER_START) + "(.*)" + re.escape(PLACEHOLDER_END) + "$")
 
 def replace_placeholders(tree, txt_dir):
+    cache = TextFileCache(txt_dir)
     ns = {"text": TEXT_URI}
     for element in tree.xpath("//text:p", namespaces=ns):
         if element.text is None:
@@ -26,15 +28,15 @@ def replace_placeholders(tree, txt_dir):
         if result:
             name = os.path.join(txt_dir, result.group(1))
             print "Replacing %s" % name
-            if os.path.exists(name):
-                replace_placeholder(element, name)
+            if name in cache:
+                replace_placeholder(element, cache[name])
             else:
                 print "ERROR: %s does not exist" % name
 
-def replace_placeholder(element, name):
+def replace_placeholder(element, content):
     style = element.get("{%s}style-name" % TEXT_URI)
     first_pass = True
-    for line in open(name).readlines():
+    for line in content.split("\n"):
         # Create next element, but not the first time: the first time we
         # reuse the existing element
         if first_pass:
