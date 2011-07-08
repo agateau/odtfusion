@@ -41,6 +41,9 @@ def replace_placeholders(tree, txt_dir):
                 print "ERROR: %s does not exist" % name
 
 def replace_placeholder(element, content):
+    # Remove ending lines
+    content = content.rstrip()
+
     style = element.get("{%s}style-name" % TEXT_URI)
     first_pass = True
     for line in content.split("\n"):
