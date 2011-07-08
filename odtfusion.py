@@ -44,10 +44,11 @@ def replace_placeholder(element, content):
     style = element.get("{%s}style-name" % TEXT_URI)
     first_pass = True
     for line in content.split("\n"):
-        # Create next element, but not the first time: the first time we
-        # reuse the existing element
+        # Create next element, but not the first time: the first time we clear
+        # the existing element (to remove the placeholder) and reuse it
         if first_pass:
             first_pass = False
+            element.text = ""
         else:
             new_element = etree.Element("{%s}p" % TEXT_URI)
             new_element.set("{%s}style-name" % TEXT_URI, style)
