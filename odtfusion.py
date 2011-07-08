@@ -62,8 +62,8 @@ def replace_placeholder(element, content):
         if space_count > 0:
             space_element = etree.Element("{%s}s" % TEXT_URI)
             space_element.set("{%s}c" % TEXT_URI, str(space_count))
-            element.insert(0, space_element)
             space_element.tail = content
+            element.append(space_element)
         else:
             element.text = content
 
