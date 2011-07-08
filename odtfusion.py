@@ -33,7 +33,7 @@ def replace_placeholders(tree, txt_dir):
             continue
         result = PLACEHOLDER_RX.match(element.text)
         if result:
-            name = os.path.join(txt_dir, result.group(1))
+            name = result.group(1)
             print "Replacing %s" % name
             if name in cache:
                 replace_placeholder(element, cache[name])
