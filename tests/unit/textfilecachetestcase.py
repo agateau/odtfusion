@@ -17,6 +17,7 @@ from textfilecache import _split_file, TextFileCache
 HELLO = """
 /// 1
 Hello
+
 /// 2
 World
 """

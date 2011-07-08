@@ -9,7 +9,11 @@ import os
 import re
 
 def _split_file(fl):
-    def add_entry(key, content): dct[key] = "".join(content)
+    def add_entry(key, content):
+        # Remove trailing empty lines
+        while len(content) > 0 and content[-1].strip() == "":
+            del content[-1]
+        dct[key] = "".join(content)
 
     dct = {}
     content = []
