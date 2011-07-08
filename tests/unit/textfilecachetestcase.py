@@ -36,7 +36,7 @@ class TextFileCacheTestCase(unittest.TestCase):
         shutil.rmtree(self.sb_dir)
 
     def test_split_file(self):
-        fl = StringIO(HELLO)
+        fl = StringIO(HELLO.encode("utf-8"))
         dct = _split_file(fl)
         self.assertEqual(len(dct), 2)
         self.assertEqual(dct["1"], u"Hello\n")
@@ -48,3 +48,23 @@ class TextFileCacheTestCase(unittest.TestCase):
         self.assert_("hello#1" in cache)
         self.assert_("hello#2" in cache)
         self.assert_(not "hello#3" in cache)
+
+    def test_unicode1(self):
+        TXT = u"ééé\nààà"
+        self._write_test_file("txt", TXT)
+        cache = TextFileCache(self.sb_dir)
+
+        self.assertEqual(cache["txt"], TXT)
+
+    def test_unicode2(self):
+        TXT = u"""
+/// 1
+ééé
+/// 2
+ààà
+"""
+        self._write_test_file("txt", TXT)
+
+        cache = TextFileCache(self.sb_dir)
+        self.assertEqual(cache["txt#1"], u"ééé\n")
+        self.assertEqual(cache["txt#2"], u"ààà\n")

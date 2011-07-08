@@ -8,18 +8,22 @@ This file is part of the odtfusion project.
 import os
 import re
 
+def _to_utf8(line):
+    return unicode(line, "utf-8")
+
 def _split_file(fl):
     def add_entry(key, content):
         # Remove trailing empty lines
-        while len(content) > 0 and content[-1].strip() == "":
+        while len(content) > 0 and content[-1].strip() == u"":
             del content[-1]
-        dct[key] = "".join(content)
+        dct[key] = u"".join(content)
 
     dct = {}
     content = []
     key = None
     rx = re.compile("^\s*/// (\w+)$")
     for line in fl.readlines():
+        line = _to_utf8(line)
         result = rx.match(line)
         if result is None:
             content.append(line)
@@ -69,7 +73,7 @@ class TextFileCache(object):
             for key, value in dct.items():
                 self._cache[file_name + "#" + key] = value
         else:
-            self._cache[name] = fl.read()
+            self._cache[name] = _to_utf8(fl.read())
 
     def _parse_name(self, name):
         """
