@@ -13,6 +13,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
 from textfilecachetestcase import TextFileCacheTestCase
+from replacertestcase import ReplacerTestCase
 
 def main():
     unittest.main()
