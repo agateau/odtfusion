@@ -16,36 +16,44 @@ PLACEHOLDER_END = "}"
 PLACEHOLDER_RX = re.compile("^" + re.escape(PLACEHOLDER_START) + "(.*)" + re.escape(PLACEHOLDER_END) + "$")
 
 def replace_placeholders(tree, dct):
-    ns = {"text": TEXT_URI}
-    for element in tree.xpath("//text:p", namespaces=ns):
+    def do_replace(element, eat_span=False):
         if element.text is None:
-            continue
-        result = PLACEHOLDER_RX.match(element.text)
-        if result:
-            name = result.group(1)
-            print "Replacing %s" % name
-            if name in dct:
-                replace_placeholder(element, dct[name])
-            else:
-                print "ERROR: %s does not exist" % name
+            return
 
-def replace_placeholder(element, content):
+        result = PLACEHOLDER_RX.match(element.text)
+        if not result:
+            return
+
+        name = result.group(1)
+        print "Replacing %s" % name
+        if not name in dct:
+            print "ERROR: %s does not exist" % name
+            return
+
+        if eat_span:
+            placeholder_element = element.getparent()
+        else:
+            placeholder_element = element
+        style = placeholder_element.get("{%s}style-name" % TEXT_URI)
+
+        insert_content(placeholder_element, style, dct[name])
+        placeholder_element.getparent().remove(placeholder_element)
+
+    ns = {"text": TEXT_URI}
+
+    for element in tree.xpath("//text:p", namespaces=ns):
+        do_replace(element)
+
+    for element in tree.xpath("//text:p/text:span", namespaces=ns):
+        do_replace(element, eat_span=True)
+
+def insert_content(previous_element, style, content):
     # Remove ending lines
     content = content.rstrip()
 
-    style = element.get("{%s}style-name" % TEXT_URI)
-    first_pass = True
     for line in content.split("\n"):
-        # Create next element, but not the first time: the first time we clear
-        # the existing element (to remove the placeholder) and reuse it
-        if first_pass:
-            first_pass = False
-            element.text = ""
-        else:
-            new_element = etree.Element("{%s}p" % TEXT_URI)
-            new_element.set("{%s}style-name" % TEXT_URI, style)
-            element.addnext(new_element)
-            element = new_element
+        element = etree.Element("{%s}p" % TEXT_URI)
+        element.set("{%s}style-name" % TEXT_URI, style)
 
         # "parse" line
         content = line.lstrip()
@@ -60,4 +68,5 @@ def replace_placeholder(element, content):
         else:
             element.text = content
 
-
+        previous_element.addnext(element)
+        previous_element = element
