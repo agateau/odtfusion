@@ -15,7 +15,7 @@ PLACEHOLDER_START = "${"
 PLACEHOLDER_END = "}"
 PLACEHOLDER_RX = re.compile("^" + re.escape(PLACEHOLDER_START) + "(.*)" + re.escape(PLACEHOLDER_END) + "$")
 
-def replace_placeholders(tree, cache):
+def replace_placeholders(tree, dct):
     ns = {"text": TEXT_URI}
     for element in tree.xpath("//text:p", namespaces=ns):
         if element.text is None:
@@ -24,8 +24,8 @@ def replace_placeholders(tree, cache):
         if result:
             name = result.group(1)
             print "Replacing %s" % name
-            if name in cache:
-                replace_placeholder(element, cache[name])
+            if name in dct:
+                replace_placeholder(element, dct[name])
             else:
                 print "ERROR: %s does not exist" % name
 
