@@ -17,10 +17,25 @@ PLACEHOLDER_RX = re.compile("^" + re.escape(PLACEHOLDER_START) + "(.*)" + re.esc
 
 def replace_placeholders(tree, dct):
     def do_replace(element, eat_span=False):
-        if element.text is None:
-            return
-
-        result = PLACEHOLDER_RX.match(element.text)
+        result = None
+        # placeholder can be either the text of an element, as in:
+        #
+        #   <text:p>${file.cpp}</text:p>"
+        #
+        # or there can be a soft-page-break element in:
+        #
+        #   <text:p>
+        #       <text:soft-page-break/>
+        #       ${file.cpp}
+        #   </text:p>
+        #
+        #
+        if element.text is not None:
+            result = PLACEHOLDER_RX.match(element.text)
+        else:
+            page_break = element.find("{%s}soft-page-break" % TEXT_URI)
+            if page_break is not None:
+                result = PLACEHOLDER_RX.match(page_break.tail)
         if not result:
             return
 

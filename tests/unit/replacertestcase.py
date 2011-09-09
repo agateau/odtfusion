@@ -66,6 +66,30 @@ class ReplacerTestCase(unittest.TestCase):
 
         self._compare_trees(tree, expected_tree)
 
+    def test_replace_text_soft_page_break(self):
+        input_xml = HEADER \
+            + "<text:p>Before</text:p>" \
+            + "<text:p text:style-name='code'>" \
+            +   "<text:soft-page-break/>${test.cpp}" \
+            + "</text:p>" \
+            + "<text:p>After</text:p>" \
+            + FOOTER
+        tree = etree.fromstring(input_xml)
+
+        expected_xml = HEADER \
+            + "<text:p>Before</text:p>" \
+            + "<text:p text:style-name='code'>line1</text:p>" \
+            + "<text:p text:style-name='code'>line2</text:p>" \
+            + "<text:p>After</text:p>" \
+            + FOOTER
+        expected_tree = etree.fromstring(expected_xml)
+
+        dct = {"test.cpp": "line1\nline2"}
+
+        replacer.replace_placeholders(tree, dct)
+
+        self._compare_trees(tree, expected_tree)
+
     def _compare_trees(self, output, expected):
         def dump(tree): return etree.tostring(tree)
         output_str = dump(output)
